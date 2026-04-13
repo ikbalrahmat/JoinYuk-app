@@ -11,10 +11,24 @@
                     </a>
                 </div>
 
-                {{-- Alert sukses setelah reset password --}}
+                {{-- Security Warning --}}
+                <div class="alert alert-warning text-center small mb-3">
+                    <strong>Peringatan Keamanan:</strong><br>
+                    Sistem ini hanya boleh diakses oleh pengguna yang berwenang. Segala percobaan akses tanpa izin atau percobaan pembobolan akan dicatat dan diaudit.
+                </div>
+
+                {{-- Alert sukses (misal setelah reset password) --}}
                 @if (session('status'))
                     <div class="alert alert-success alert-dismissible fade show text-center mb-4" role="alert">
                         {{ session('status') }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                @endif
+
+                {{-- Alert error (misal akun terblokir) --}}
+                @if (session('error'))
+                    <div class="alert alert-danger alert-dismissible fade show text-center mb-4" role="alert">
+                        {{ session('error') }}
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 @endif

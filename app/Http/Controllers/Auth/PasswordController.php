@@ -20,10 +20,30 @@ class PasswordController extends Controller
             'password' => ['required', Password::defaults(), 'confirmed'],
         ]);
 
-        $request->user()->update([
-            'password' => Hash::make($validated['password']),
+        $user = $request->user();
+
+        // 1. Cek apakah password baru sama dengan 3 password terakhir
+        $histories = $user->passwordHistories()->latest()->take(3)->get();
+        foreach ($histories as $history) {
+            if (Hash::check($validated['password'], $history->password)) {
+                return back()->withErrors(['password' => 'Anda tidak boleh menggunakan kembali 3 password terakhir Anda.'])->withInput();
+            }
+        }
+
+        // 2. Update user
+        $newPasswordHash = Hash::make($validated['password']);
+        $user->update([
+            'password' => $newPasswordHash,
+            'password_updated_at' => now(),
+            'requires_password_change' => false,
+            'is_locked' => false, // jika tadinya terkunci karena suatu hal
         ]);
 
-        return back()->with('status', 'password-updated');
+        // 3. Simpan ke history
+        $user->passwordHistories()->create([
+            'password' => $newPasswordHash
+        ]);
+
+        return back()->with('status', 'password-updated')->with('success', 'Password berhasil diubah.');
     }
 }

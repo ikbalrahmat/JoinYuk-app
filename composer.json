@@ -16,6 +16,7 @@
         "laravel/ui": "^4.6",
         "phpoffice/phpword": "^1.4",
         "simplesoftwareio/simple-qrcode": "^4.2",
+        "spatie/laravel-activitylog": "^4.12",
         "spatie/laravel-permission": "^6.20",
         "yajra/laravel-datatables": "^11.0"
     },

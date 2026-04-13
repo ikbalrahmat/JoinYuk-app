@@ -11,7 +11,7 @@ use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable, HasRoles;
+    use HasFactory, Notifiable, HasRoles, \Spatie\Activitylog\Traits\LogsActivity;
 
     /**
      * The attributes that are mass assignable.
@@ -24,6 +24,9 @@ class User extends Authenticatable
         'password',
         'unit_kerja',
         'created_by',
+        'password_updated_at',
+        'requires_password_change',
+        'is_locked',
     ];
 
     /**
@@ -46,6 +49,21 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'password_updated_at' => 'datetime',
+            'requires_password_change' => 'boolean',
+            'is_locked' => 'boolean',
         ];
+    }
+
+    public function passwordHistories()
+    {
+        return $this->hasMany(PasswordHistory::class);
+    }
+
+    public function getActivitylogOptions(): \Spatie\Activitylog\LogOptions
+    {
+        return \Spatie\Activitylog\LogOptions::defaults()
+            ->logAll()
+            ->logOnlyDirty();
     }
 }

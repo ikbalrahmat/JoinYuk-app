@@ -54,7 +54,12 @@
                 <tbody>
                     @forelse($users as $user)
                     <tr class="hover:bg-gray-50">
-                        <td class="px-4 py-2 border border-gray-300">{{ $user->name }}</td>
+                        <td class="px-4 py-2 border border-gray-300">
+                            {{ $user->name }}
+                            @if($user->is_locked)
+                                <span class="ml-2 px-2 py-0.5 text-xs bg-red-100 text-red-700 border border-red-300 rounded font-bold">TERKUNCI</span>
+                            @endif
+                        </td>
                         <td class="px-4 py-2 border border-gray-300">{{ $user->email }}</td>
                         <td class="px-4 py-2 border border-gray-300">{{ $user->unit_kerja }}</td>
                         <td class="px-4 py-2 border border-gray-300">

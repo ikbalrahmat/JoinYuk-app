@@ -53,5 +53,32 @@ class AppServiceProvider extends ServiceProvider
         if (config('app.env') === 'production') {
             URL::forceScheme('https');
         }
-    }
+
+        \Illuminate\Validation\Rules\Password::defaults(function () {
+            return \Illuminate\Validation\Rules\Password::min(8)
+                ->letters()
+                ->mixedCase()
+                ->numbers()
+                ->symbols()
+                ->uncompromised();
+        });
+
+        \Illuminate\Support\Facades\Event::listen(\Illuminate\Auth\Events\Login::class, function (\Illuminate\Auth\Events\Login $event) {
+            activity('auth')
+                ->causedBy($event->user)
+                ->withProperties(['ip' => request()->ip(), 'user_agent' => request()->userAgent()])
+                ->event('login')
+                ->log('User berhasil login');
+        });
+
+        \Illuminate\Support\Facades\Event::listen(\Illuminate\Auth\Events\Failed::class, function (\Illuminate\Auth\Events\Failed $event) {
+            activity('auth')
+                ->withProperties([
+                    'email' => request()->email, 
+                    'ip' => request()->ip(),
+                    'user_agent' => request()->userAgent()
+                ])
+                ->event('failed_login')
+                ->log('Gagal login (kredensial salah)');
+        });    }
 }
