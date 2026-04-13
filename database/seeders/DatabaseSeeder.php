@@ -14,10 +14,16 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        $this->call([
+            RoleSeeder::class,
+        ]);
+
         $user = new User();
         $user->name = "Admin";
         $user->email = "admin@gmail.com";
         $user->password = Hash::make("password");
         $user->save();
+
+        $user->assignRole('super_admin');
     }
 }
