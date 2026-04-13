@@ -28,6 +28,7 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\URL;
 use Carbon\Carbon;
 
 class AppServiceProvider extends ServiceProvider
@@ -48,5 +49,9 @@ class AppServiceProvider extends ServiceProvider
         // Set locale Carbon dan Aplikasi ke Bahasa Indonesia
         Carbon::setLocale('id');
         App::setLocale('id');
+
+        if (config('app.env') === 'production') {
+            URL::forceScheme('https');
+        }
     }
 }
