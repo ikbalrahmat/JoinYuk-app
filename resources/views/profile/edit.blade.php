@@ -2,6 +2,13 @@
 
 @section('content')
 <div class="max-w-6xl mx-auto">
+    @if(session('warning'))
+    <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-6 shadow-md rounded" role="alert">
+        <p class="font-bold"><i class="fa fa-exclamation-triangle mr-2"></i> Peringatan Keamanan</p>
+        <p>{{ session('warning') }}</p>
+    </div>
+    @endif
+
     <h2 class="text-2xl font-bold text-gray-800 mb-6">Pengaturan Akun</h2>
     <div class="bg-white rounded-xl shadow-lg overflow-hidden">
         <div class="grid grid-cols-1 md:grid-cols-3">
