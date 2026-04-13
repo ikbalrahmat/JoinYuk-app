@@ -11,11 +11,11 @@ return new class extends Migration
      */
     public function up()
     {
-        // Schema::table('presence_details', function (Blueprint $table) {
-        //     $table->unsignedBigInteger('user_id')->after('presence_id');
+        Schema::table('presence_details', function (Blueprint $table) {
+            $table->unsignedBigInteger('user_id')->after('presence_id');
 
-        //     $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-        // });
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+        });
     }
     /**
      * Reverse the migrations.

@@ -9,6 +9,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('undangan', function (Blueprint $table) {
+            if (!Schema::hasColumn('undangan', 'user_id')) {
+                $table->unsignedBigInteger('user_id')->after('id')->nullable();
+            }
             // tambahin foreign key aja, jangan bikin kolom lagi
             $table->foreign('user_id')
                   ->references('id')
