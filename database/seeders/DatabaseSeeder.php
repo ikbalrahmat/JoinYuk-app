@@ -19,9 +19,9 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $user = new User();
-        $user->name = "Admin";
-        $user->email = "admin@gmail.com";
-        $user->password = Hash::make("password");
+        $user->name = "Super Admin";
+        $user->email = "superadmin@peruri.co.id";
+        $user->password = Hash::make("P@ssword123!");
         $user->save();
 
         $user->assignRole('super_admin');
