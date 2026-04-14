@@ -26,7 +26,7 @@ class PasswordController extends Controller
         $histories = $user->passwordHistories()->latest()->take(3)->get();
         foreach ($histories as $history) {
             if (Hash::check($validated['password'], $history->password)) {
-                return back()->withErrors(['password' => 'Anda tidak boleh menggunakan kembali 3 password terakhir Anda.'])->withInput();
+                return back()->withErrors(['password' => 'Anda tidak boleh menggunakan kembali 3 password terakhir Anda.'], 'updatePassword')->withInput();
             }
         }
 

@@ -15,16 +15,25 @@
         <div>
             <label for="current_password" class="block text-sm font-medium text-gray-700">Password Saat Ini</label>
             <input id="current_password" name="current_password" type="password" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500">
+            @error('current_password', 'updatePassword')
+                <p class="text-sm text-red-600 mt-2">{{ $message }}</p>
+            @enderror
         </div>
 
         <div>
             <label for="password" class="block text-sm font-medium text-gray-700">Password Baru</label>
             <input id="password" name="password" type="password" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500">
+            @error('password', 'updatePassword')
+                <p class="text-sm text-red-600 mt-2">{{ $message }}</p>
+            @enderror
         </div>
 
         <div>
             <label for="password_confirmation" class="block text-sm font-medium text-gray-700">Konfirmasi Password</label>
             <input id="password_confirmation" name="password_confirmation" type="password" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500">
+            @error('password_confirmation', 'updatePassword')
+                <p class="text-sm text-red-600 mt-2">{{ $message }}</p>
+            @enderror
         </div>
 
         <div class="flex items-center gap-4">

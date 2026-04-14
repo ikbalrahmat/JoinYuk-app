@@ -15,11 +15,17 @@
         <div>
             <label for="name" class="block text-sm font-medium text-gray-700">Nama</label>
             <input id="name" name="name" type="text" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500" value="{{ old('name', $user->name) }}" required autofocus>
+            @error('name')
+                <p class="text-sm text-red-600 mt-2">{{ $message }}</p>
+            @enderror
         </div>
 
         <div>
             <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
             <input id="email" name="email" type="email" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500" value="{{ old('email', $user->email) }}" required>
+            @error('email')
+                <p class="text-sm text-red-600 mt-2">{{ $message }}</p>
+            @enderror
         </div>
 
         <div class="flex items-center gap-4">
