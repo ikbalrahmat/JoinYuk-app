@@ -144,37 +144,79 @@
 
     <table class="table-peserta">
         <thead>
-            <tr>
-                <th width="30">No</th>
-                <th>Nama</th>
-                <th width="60">NP</th>
-                <th>Jabatan</th>
-                <th>Unit Kerja / Instansi</th>
-                <th width="120">Tanda Tangan</th>
-            </tr>
+            @php
+                $presence = $presenceDetails->first()?->presence;
+            @endphp
+            @if (!$presence || empty($presence->custom_fields))
+                <tr>
+                    <th width="30">No</th>
+                    <th>Nama</th>
+                    <th width="60">NP</th>
+                    <th>Jabatan</th>
+                    <th>Unit Kerja / Instansi</th>
+                    <th width="120">Tanda Tangan</th>
+                </tr>
+            @else
+                <tr>
+                    <th width="30">No</th>
+                    @foreach ($presence->custom_fields as $field)
+                       <th {!! $field['type'] === 'signature' ? 'width="120"' : '' !!}>{{ $field['label'] }}</th>
+                    @endforeach
+                </tr>
+            @endif
         </thead>
         <tbody>
             @forelse($presenceDetails as $detail)
+                @php $presence = $detail->presence; @endphp
                 <tr>
                     <td>{{ $loop->iteration }}</td>
-                    <td class="text-left">{{ $detail->nama }}</td>
-                    <td>{{ $detail->np }}</td>
-                    <td class="text-left">{{ $detail->jabatan }}</td>
-                    <td class="text-left">{{ $detail->asal_instansi }}</td>
-                    <td>
-                        @if ($detail->tanda_tangan)
+                    @if (empty($presence->custom_fields))
+                        <td class="text-left">{{ $detail->nama }}</td>
+                        <td>{{ $detail->np }}</td>
+                        <td class="text-left">{{ $detail->jabatan }}</td>
+                        <td class="text-left">{{ $detail->asal_instansi }}</td>
+                        <td>
+                            @if ($detail->tanda_tangan)
+                                @php
+                                    $ttdPath = public_path('uploads/' . $detail->tanda_tangan);
+                                    $ttdBase64 = file_exists($ttdPath)
+                                        ? 'data:image/' . pathinfo($ttdPath, PATHINFO_EXTENSION) . ';base64,' . base64_encode(file_get_contents($ttdPath))
+                                        : null;
+                                @endphp
+                                @if ($ttdBase64)<img src="{{ $ttdBase64 }}" style="max-width: 100%; max-height:40px;">@endif
+                            @endif
+                        </td>
+                    @else
+                        @foreach ($presence->custom_fields as $field)
                             @php
-                                $ttdPath = public_path('uploads/' . $detail->tanda_tangan);
-                                $ttdBase64 = file_exists($ttdPath)
-                                    ? 'data:image/' . pathinfo($ttdPath, PATHINFO_EXTENSION) . ';base64,' . base64_encode(file_get_contents($ttdPath))
-                                    : null;
+                                $val = $detail->additional_data[$field['id']] ?? '';
                             @endphp
-                            @if ($ttdBase64)<img src="{{ $ttdBase64 }}" style="max-width: 100%; max-height:40px;">@endif
-                        @endif
-                    </td>
+                            @if ($field['type'] === 'signature')
+                                <td>
+                                    @if ($val)
+                                        @php
+                                            $ttdPath = public_path('uploads/' . $val);
+                                            if (file_exists($ttdPath)) {
+                                                $ttdType = pathinfo($ttdPath, PATHINFO_EXTENSION);
+                                                $ttdData = file_get_contents($ttdPath);
+                                                $ttdBase64 = 'data:image/' . $ttdType . ';base64,' . base64_encode($ttdData);
+                                                echo '<img src="' . $ttdBase64 . '" style="max-width: 100%; max-height:40px;">';
+                                            }
+                                        @endphp
+                                    @endif
+                                </td>
+                            @else
+                                <td class="text-left">{{ is_array($val) ? implode(', ', $val) : $val }}</td>
+                            @endif
+                        @endforeach
+                    @endif
                 </tr>
             @empty
-                <tr><td colspan="6">Tidak ada data peserta.</td></tr>
+                @php
+                    $presence = isset($presenceDetails) && $presenceDetails->isNotEmpty() ? $presenceDetails->first()->presence : null;
+                    $colspan = (!$presence || empty($presence->custom_fields)) ? 6 : count($presence->custom_fields) + 1;
+                @endphp
+                <tr><td colspan="{{ $colspan }}">Tidak ada data peserta.</td></tr>
             @endforelse
         </tbody>
     </table>

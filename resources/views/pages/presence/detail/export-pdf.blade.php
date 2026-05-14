@@ -32,7 +32,7 @@
     .main-table th {
       border: 1px solid black;
       padding: 6px;
-      vertical-align: top;
+      vertical-align: middle;
     }
 
     .logo-cell {
@@ -103,75 +103,155 @@
 <body>
 
   @php
-    $path = public_path('assets/logo.png');
-    $type = pathinfo($path, PATHINFO_EXTENSION);
-    $data = file_get_contents($path);
-    $logo = 'data:image/' . $type . ';base64,' . base64_encode($data);
+    $headerConfig = is_string($presence->header_config) ? json_decode($presence->header_config, true) : $presence->header_config;
+    
+    $showDate = $headerConfig['show_date'] ?? true;
+    $showTime = $headerConfig['show_time'] ?? true;
+    $showLocation = $headerConfig['show_location'] ?? true;
+    
+    // Default logoOption if not set
+    $logoOpt = isset($logoOption) ? $logoOption : 'both';
+    
+    // Setup Logo Left
+    $logoLeftBase64 = null;
+    if (!empty($headerConfig['logo_left']) && in_array($logoOpt, ['both', 'left'])) {
+        $path = public_path('storage/' . $headerConfig['logo_left']);
+        if (file_exists($path)) {
+            $type = pathinfo($path, PATHINFO_EXTENSION);
+            $data = file_get_contents($path);
+            $logoLeftBase64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
+        }
+    }
+
+    // Setup Logo Right
+    $logoRightBase64 = null;
+    if (!empty($headerConfig['logo_right']) && in_array($logoOpt, ['both', 'right'])) {
+        $path = public_path('storage/' . $headerConfig['logo_right']);
+        if (file_exists($path)) {
+            $type = pathinfo($path, PATHINFO_EXTENSION);
+            $data = file_get_contents($path);
+            $logoRightBase64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
+        }
+    }
+
+    // Calculate rowspan for logo cells
+    $rowspan = 2 + ($showDate ? 1 : 0) + ($showTime ? 1 : 0) + ($showLocation ? 1 : 0);
   @endphp
 
   <!-- HEADER -->
   <table class="main-table">
     <tr>
-      <td class="logo-cell" rowspan="5">
-        <img src="{{ $logo }}">
+      @if($logoLeftBase64)
+      <td class="logo-cell" rowspan="{{ $rowspan }}">
+        <img src="{{ $logoLeftBase64 }}">
       </td>
+      @endif
+
       <td colspan="2" class="header-title">DAFTAR HADIR</td>
+
+      @if($logoRightBase64)
+      <td class="logo-cell" rowspan="{{ $rowspan }}">
+        <img src="{{ $logoRightBase64 }}">
+      </td>
+      @endif
     </tr>
     <tr>
       <td class="info-label">Agenda / Kegiatan :</td>
       <td class="info-value">{{ $presence->nama_kegiatan ?? '' }}</td>
     </tr>
+    @if($showDate)
     <tr>
       <td class="info-label">Hari / Tanggal :</td>
-      <td class="info-value">{{ \Carbon\Carbon::parse($presence->tgl_kegiatan)->translatedFormat('l, d F Y') }}</td>
+      <td class="info-value">{{ $presence->tgl_kegiatan ? \Carbon\Carbon::parse($presence->tgl_kegiatan)->translatedFormat('l, d F Y') : '-' }}</td>
     </tr>
+    @endif
+    @if($showTime)
     <tr>
       <td class="info-label">Waktu :</td>
-      <td class="info-value">{{ date('H:i', strtotime($presence->tgl_kegiatan)) }} - s.d Selesai</td>
+      <td class="info-value">{{ $presence->tgl_kegiatan ? date('H:i', strtotime($presence->tgl_kegiatan)) . ' - s.d Selesai' : '-' }}</td>
     </tr>
+    @endif
+    @if($showLocation)
     <tr>
       <td class="info-label">Tempat :</td>
       <td class="info-value">{{ $presence->tempat ?? '-' }}</td>
     </tr>
+    @endif
   </table>
 
   <!-- TABEL PESERTA -->
   <table class="table-peserta">
     <thead>
-      <tr>
-        <th width="20">No</th>
-        <th>Nama</th>
-        <th width="30">NP</th>
-        <th>Jabatan</th>
-        <th>Unit Kerja / Instansi</th>
-        <th width="120">Tanda Tangan</th>
-      </tr>
+      @if (empty($presence->custom_fields))
+        <tr>
+          <th width="20">No</th>
+          <th>Nama</th>
+          <th width="30">NP</th>
+          <th>Jabatan</th>
+          <th>Unit Kerja / Instansi</th>
+          <th width="120">Tanda Tangan</th>
+        </tr>
+      @else
+        <tr>
+          <th width="20">No</th>
+          @foreach ($presence->custom_fields as $field)
+             <th {!! $field['type'] === 'signature' ? 'width="120"' : '' !!}>{{ $field['label'] }}</th>
+          @endforeach
+        </tr>
+      @endif
     </thead>
     <tbody>
       @if ($presenceDetails->isEmpty())
         <tr>
-          <td colspan="6">Tidak ada data</td>
+          <td colspan="{{ empty($presence->custom_fields) ? 6 : count($presence->custom_fields) + 1 }}">Tidak ada data</td>
         </tr>
       @endif
 
       @foreach ($presenceDetails as $detail)
         <tr>
           <td>{{ $loop->iteration }}</td>
-          <td class="text-left">{{ $detail->nama }}</td>
-          <td>{{ $detail->np }}</td>
-          <td class="text-left">{{ $detail->jabatan }}</td>
-          <td class="text-left">{{ $detail->asal_instansi }}</td>
-          <td>
-            @if ($detail->tanda_tangan)
+          @if (empty($presence->custom_fields))
+            <td class="text-left">{{ $detail->nama }}</td>
+            <td>{{ $detail->np }}</td>
+            <td class="text-left">{{ $detail->jabatan }}</td>
+            <td class="text-left">{{ $detail->asal_instansi }}</td>
+            <td>
+              @if ($detail->tanda_tangan)
+                @php
+                  $ttdPath = public_path('uploads/' . $detail->tanda_tangan);
+                  if(file_exists($ttdPath)) {
+                      $ttdType = pathinfo($ttdPath, PATHINFO_EXTENSION);
+                      $ttdData = file_get_contents($ttdPath);
+                      $ttdBase64 = 'data:image/' . $ttdType . ';base64,' . base64_encode($ttdData);
+                      echo '<img src="' . $ttdBase64 . '" style="max-width: 100%; max-height:40px;">';
+                  }
+                @endphp
+              @endif
+            </td>
+          @else
+            @foreach ($presence->custom_fields as $field)
               @php
-                $ttdPath = public_path('uploads/' . $detail->tanda_tangan);
-                $ttdType = pathinfo($ttdPath, PATHINFO_EXTENSION);
-                $ttdData = file_get_contents($ttdPath);
-                $ttdBase64 = 'data:image/' . $ttdType . ';base64,' . base64_encode($ttdData);
+                  $val = $detail->additional_data[$field['id']] ?? '';
               @endphp
-              <img src="{{ $ttdBase64 }}" style="max-width: 100%; max-height:40px;">
-            @endif
-          </td>
+              @if ($field['type'] === 'signature')
+                  <td>
+                    @if ($val)
+                      @php
+                        $ttdPath = public_path('uploads/' . $val);
+                        if (file_exists($ttdPath)) {
+                            $ttdType = pathinfo($ttdPath, PATHINFO_EXTENSION);
+                            $ttdData = file_get_contents($ttdPath);
+                            $ttdBase64 = 'data:image/' . $ttdType . ';base64,' . base64_encode($ttdData);
+                            echo '<img src="' . $ttdBase64 . '" style="max-width: 100%; max-height:40px;">';
+                        }
+                      @endphp
+                    @endif
+                  </td>
+              @else
+                  <td class="text-left">{{ is_array($val) ? implode(', ', $val) : $val }}</td>
+              @endif
+            @endforeach
+          @endif
         </tr>
       @endforeach
     </tbody>

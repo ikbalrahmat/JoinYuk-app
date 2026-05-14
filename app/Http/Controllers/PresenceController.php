@@ -20,12 +20,28 @@ class PresenceController extends Controller
         return $dataTable->render('pages.presence.index');
     }
 
+    public function choose()
+    {
+        $templates = Presence::where('created_by', auth()->id())->latest()->get();
+        return view('pages.presence.choose', compact('templates'));
+    }
+
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(Request $request)
     {
-        return view('pages.presence.create');
+        $templateData = null;
+        if ($request->template_id) {
+            $templateData = Presence::where('id', $request->template_id)
+                ->where('created_by', auth()->id())
+                ->first();
+        }
+        
+        $formName = $request->name ?? 'Untitled Form';
+        $formType = $request->type ?? 'standard';
+        
+        return view('pages.presence.create', compact('templateData', 'formName', 'formType'));
     }
 
     /**
@@ -35,16 +51,50 @@ class PresenceController extends Controller
     {
         $request->validate([
             'nama_kegiatan' => 'required',
-            'tgl_kegiatan' => 'required',
-            'waktu_mulai' => 'required',
         ]);
 
         $presence = new Presence();
         $presence->nama_kegiatan = $request->nama_kegiatan;
         $presence->slug = Str::slug($request->nama_kegiatan);
-        $presence->tgl_kegiatan = $request->tgl_kegiatan . ' ' . $request->waktu_mulai;
+        
+        if ($request->tgl_kegiatan || $request->waktu_mulai) {
+            $presence->tgl_kegiatan = trim($request->tgl_kegiatan . ' ' . $request->waktu_mulai);
+        } else {
+            $presence->tgl_kegiatan = null;
+        }
         $presence->tempat = $request->tempat;
         $presence->created_by = auth()->id();
+        
+        if ($request->has('custom_fields')) {
+            $presence->custom_fields = json_decode($request->custom_fields, true);
+        }
+
+        if ($request->has('header_config')) {
+            $headerConfig = json_decode($request->header_config, true);
+            
+            // Process Logo Kiri
+            if (!empty($headerConfig['logo_left']) && strpos($headerConfig['logo_left'], 'data:image') === 0) {
+                $base64_image = $headerConfig['logo_left'];
+                @list($type, $file_data) = explode(';', $base64_image);
+                @list(, $file_data) = explode(',', $file_data);
+                $logoPath = "logos/" . date('YmdHis') . uniqid() . ".png";
+                Storage::disk('public')->put($logoPath, base64_decode($file_data));
+                $headerConfig['logo_left'] = $logoPath;
+            }
+            
+            // Process Logo Kanan
+            if (!empty($headerConfig['logo_right']) && strpos($headerConfig['logo_right'], 'data:image') === 0) {
+                $base64_image = $headerConfig['logo_right'];
+                @list($type, $file_data) = explode(';', $base64_image);
+                @list(, $file_data) = explode(',', $file_data);
+                $logoPath = "logos/" . date('YmdHis') . uniqid() . ".png";
+                Storage::disk('public')->put($logoPath, base64_decode($file_data));
+                $headerConfig['logo_right'] = $logoPath;
+            }
+            
+            $presence->header_config = json_encode($headerConfig);
+        }
+
         $presence->save();
 
         return redirect()->route('presence.index');
@@ -75,17 +125,50 @@ class PresenceController extends Controller
     {
         $request->validate([
             'nama_kegiatan' => 'required',
-            'tgl_kegiatan' => 'required',
-            'waktu_mulai' => 'required',
-            'tempat' => 'required',
         ]);
 
         $presence = Presence::findOrFail($id);
         $presence->nama_kegiatan = $request->nama_kegiatan;
         $presence->slug = Str::slug($request->nama_kegiatan);
-        $presence->tgl_kegiatan = $request->tgl_kegiatan . ' ' . $request->waktu_mulai;
+
+        if ($request->tgl_kegiatan || $request->waktu_mulai) {
+            $presence->tgl_kegiatan = trim($request->tgl_kegiatan . ' ' . $request->waktu_mulai);
+        } else {
+            $presence->tgl_kegiatan = null;
+        }
         $presence->tempat = $request->tempat;
         $presence->created_by = auth()->id();
+        
+        if ($request->has('custom_fields')) {
+            $presence->custom_fields = json_decode($request->custom_fields, true);
+        }
+
+        if ($request->has('header_config')) {
+            $headerConfig = json_decode($request->header_config, true);
+            
+            // Process Logo Kiri
+            if (!empty($headerConfig['logo_left']) && strpos($headerConfig['logo_left'], 'data:image') === 0) {
+                $base64_image = $headerConfig['logo_left'];
+                @list($type, $file_data) = explode(';', $base64_image);
+                @list(, $file_data) = explode(',', $file_data);
+                $logoPath = "logos/" . date('YmdHis') . uniqid() . ".png";
+                Storage::disk('public')->put($logoPath, base64_decode($file_data));
+                $headerConfig['logo_left'] = $logoPath;
+            }
+            
+            // Process Logo Kanan
+            if (!empty($headerConfig['logo_right']) && strpos($headerConfig['logo_right'], 'data:image') === 0) {
+                $base64_image = $headerConfig['logo_right'];
+                @list($type, $file_data) = explode(';', $base64_image);
+                @list(, $file_data) = explode(',', $file_data);
+                $logoPath = "logos/" . date('YmdHis') . uniqid() . ".png";
+                Storage::disk('public')->put($logoPath, base64_decode($file_data));
+                $headerConfig['logo_right'] = $logoPath;
+            }
+            
+            $presence->header_config = json_encode($headerConfig);
+        }
+
         $presence->save();
 
         return redirect()->route('presence.index');

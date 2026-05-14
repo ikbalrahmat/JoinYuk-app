@@ -5,7 +5,7 @@
     <div class="bg-white shadow rounded-2xl p-6">
         <div class="flex items-center justify-between mb-4">
             <h3 class="text-lg font-semibold text-gray-700">Riwayat Agenda / Kegiatan</h3>
-            <a href="{{ route('presence.create') }}"
+            <a href="{{ route('presence.choose') }}"
                class="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-xl shadow hover:bg-blue-700 transition">
                 <i class="bi bi-calendar-plus mr-2"></i> Buat Absensi Baru
             </a>

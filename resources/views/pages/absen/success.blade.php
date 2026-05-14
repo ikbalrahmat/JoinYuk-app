@@ -73,17 +73,40 @@
   <div class="container py-5 content-wrapper">
     <!-- Header Info -->
     <div class="card p-4 mb-4">
-      <div class="d-flex justify-content-between align-items-center title-divider">
-        <img src="{{ asset('assets/bumn.png') }}" alt="Logo BUMN" class="header-logo">
-        <h4 class="fw-bold text-center">DAFTAR HADIR KEGIATAN</h4>
-        <img src="{{ asset('assets/logo.png') }}" alt="Logo PERURI" class="header-logo">
+      @php
+          $headerConfig = isset($presence->header_config) && is_string($presence->header_config) ? json_decode($presence->header_config, true) : $presence->header_config;
+          $logoLeft = !empty($headerConfig['logo_left']) ? asset('storage/' . $headerConfig['logo_left']) : null;
+          $logoRight = !empty($headerConfig['logo_right']) ? asset('storage/' . $headerConfig['logo_right']) : null;
+          
+          $showDate = isset($headerConfig['show_date']) ? $headerConfig['show_date'] : (!empty($presence->tgl_kegiatan));
+          $showTime = isset($headerConfig['show_time']) ? $headerConfig['show_time'] : (!empty($presence->tgl_kegiatan));
+          $showLocation = isset($headerConfig['show_location']) ? $headerConfig['show_location'] : (!empty($presence->tempat));
+      @endphp
+      <div class="position-relative d-flex justify-content-center align-items-center title-divider" style="min-height: 50px;">
+        @if($logoLeft)
+        <img src="{{ $logoLeft }}" alt="Logo Kiri" class="header-logo position-absolute start-0">
+        @endif
+        
+        <h4 class="fw-bold text-center px-3 mb-0" style="max-width: 65%; margin: 0 auto; position: relative; z-index: 1;">{{ $presence->nama_kegiatan }}</h4>
+        
+        @if($logoRight)
+        <img src="{{ $logoRight }}" alt="Logo Kanan" class="header-logo position-absolute end-0">
+        @endif
       </div>
-      <table class="table table-borderless mt-2 mb-0">
-        <tr><td width="160">Agenda</td><td>: {{ $presence->nama_kegiatan }}</td></tr>
-        <tr><td>Tanggal</td><td>: {{ \Carbon\Carbon::parse($presence->tgl_kegiatan)->translatedFormat('l, d F Y') }}</td></tr>
-        <tr><td>Waktu</td><td>: {{ \Carbon\Carbon::parse($presence->tgl_kegiatan)->format('H:i') }} - s.d Selesai</td></tr>
-        <tr><td>Tempat</td><td>: {{ $presence->tempat }}</td></tr>
+      
+      @if($showDate || $showTime || $showLocation)
+      <table class="table table-borderless mt-3 mb-0">
+        @if($showDate && $presence->tgl_kegiatan)
+        <tr><td width="160" class="fw-semibold text-muted">Tanggal</td><td class="fw-medium">: {{ \Carbon\Carbon::parse($presence->tgl_kegiatan)->translatedFormat('l, d F Y') }}</td></tr>
+        @endif
+        @if($showTime && $presence->tgl_kegiatan)
+        <tr><td width="160" class="fw-semibold text-muted">Waktu</td><td class="fw-medium">: {{ \Carbon\Carbon::parse($presence->tgl_kegiatan)->format('H:i') }} - s.d Selesai WIB</td></tr>
+        @endif
+        @if($showLocation && $presence->tempat)
+        <tr><td width="160" class="fw-semibold text-muted">Tempat</td><td class="fw-medium">: {{ $presence->tempat }}</td></tr>
+        @endif
       </table>
+      @endif
     </div>
 
     <div class="row g-4">

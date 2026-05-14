@@ -22,32 +22,56 @@ class PresenceDetailsDataTable extends DataTable
 
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
-        return (new EloquentDataTable($query))
+        $dt = (new EloquentDataTable($query))
             ->addColumn('waktu_absen', function ($query) {
                 return date('d-m-Y H:i:s', strtotime($query->created_at));
             })
-            ->addColumn('tanda_tangan', function ($query) {
-                return "<img width='100' src='" . asset('uploads/' . $query->tanda_tangan) . "'>";
-            })
             ->addColumn('action', function ($query) {
                 return "<button type='button' class='btn btn-delete btn-danger' data-url='" . route('presence-detail.destroy', $query->id) . "'>Hapus</button>";
-            })
-            ->rawColumns(['tanda_tangan', 'action'])
-            ->setRowId('id');
+            });
+
+        $presenceId = $this->presenceId ?? request()->integer('presence_id');
+        $presence = \App\Models\Presence::find($presenceId);
+
+        $rawColumns = ['action'];
+
+        if ($presence && !empty($presence->custom_fields)) {
+            foreach ($presence->custom_fields as $field) {
+                $id = $field['id'];
+                $dt->addColumn("custom_$id", function ($row) use ($id, $field) {
+                    $val = $row->additional_data[$id] ?? '';
+                    if ($field['type'] === 'signature' && $val) {
+                        return "<img width='100' src='" . asset('uploads/' . $val) . "'>";
+                    }
+                    return is_array($val) ? implode(', ', $val) : $val;
+                });
+                
+                if ($field['type'] === 'signature') {
+                    $rawColumns[] = "custom_$id";
+                }
+            }
+        } else {
+            // Legacy
+            $dt->addColumn('tanda_tangan', function ($query) {
+                if ($query->tanda_tangan) {
+                    return "<img width='100' src='" . asset('uploads/' . $query->tanda_tangan) . "'>";
+                }
+                return '-';
+            });
+            $rawColumns[] = 'tanda_tangan';
+        }
+
+        return $dt->rawColumns($rawColumns)->setRowId('id');
     }
 
     public function query(PresenceDetail $model): QueryBuilder
     {
-        // Saat page load: dari property (di-set controller)
-        // Saat AJAX DataTable request: dari query parameter yang dikirim minifiedAjax
         $presenceId = $this->presenceId ?? request()->integer('presence_id');
         return $model->newQuery()->with('presence')->where('presence_id', $presenceId);
     }
 
     public function html(): HtmlBuilder
     {
-        $presenceId = $this->presenceId ?? 0;
-
         return $this->builder()
             ->setTableId('presencedetails-table')
             ->columns($this->getColumns())
@@ -64,26 +88,33 @@ class PresenceDetailsDataTable extends DataTable
 
     public function getColumns(): array
     {
-        return [
-            Column::make('id')
-                ->title('No')
-                ->render('meta.row + meta.settings._iDisplayStart + 1;')
-                ->width(100),
-            Column::make('presence.nama_kegiatan')
-                ->title('Nama Kegiatan')
-                ->searchable(false)->orderable(false),
-            Column::make('nama'),
-            Column::make('np')->title('NP'),
-            Column::make('jabatan'),
-            Column::make('asal_instansi')->title('Unit Kerja/Instansi'),
-            Column::make('tanda_tangan')
-                ->searchable(false)->orderable(false),
-            Column::computed('action')
-                ->exportable(false)
-                ->printable(false)
-                ->width(60)
-                ->addClass('text-center'),
+        $columns = [
+            Column::make('id')->title('No')->render('meta.row + meta.settings._iDisplayStart + 1;')->width(100),
+            Column::make('waktu_absen')->title('Waktu')->searchable(false)->orderable(false),
         ];
+
+        $presenceId = $this->presenceId ?? request()->integer('presence_id');
+        $presence = \App\Models\Presence::find($presenceId);
+
+        if ($presence && !empty($presence->custom_fields)) {
+            foreach ($presence->custom_fields as $field) {
+                $columns[] = Column::make("custom_" . $field['id'])
+                                ->title($field['label'])
+                                ->searchable(false)
+                                ->orderable(false);
+            }
+        } else {
+            // Legacy
+            $columns[] = Column::make('nama');
+            $columns[] = Column::make('np')->title('NP');
+            $columns[] = Column::make('jabatan');
+            $columns[] = Column::make('asal_instansi')->title('Unit Kerja/Instansi');
+            $columns[] = Column::make('tanda_tangan')->searchable(false)->orderable(false);
+        }
+
+        $columns[] = Column::computed('action')->exportable(false)->printable(false)->width(60)->addClass('text-center');
+
+        return $columns;
     }
 
     protected function filename(): string

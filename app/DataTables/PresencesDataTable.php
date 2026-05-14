@@ -21,12 +21,6 @@ class PresencesDataTable extends DataTable
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
         return (new EloquentDataTable($query))
-            ->addColumn('tgl', function ($query) {
-                return date('d F Y', strtotime($query->tgl_kegiatan));
-            })
-            ->addColumn('waktu_mulai', function ($query) {
-                return date('H:i', strtotime($query->tgl_kegiatan)) . ' - s.d Selesai';
-            })
             ->addColumn('action', function ($query) {
                 $btnDetail = "<a href='" . route('presence.show', $query->id) . "' class='btn btn-secondary'>Detail</a>";
                 $btnEdit = "<a href='" . route('presence.edit', $query->id) . "' class='btn btn-warning'>Edit</a>";
@@ -96,14 +90,6 @@ class PresencesDataTable extends DataTable
                 ->width(100)
                 ->addClass('text-center'),
             Column::make('nama_kegiatan')
-                ->addClass('text-center'),
-            Column::make('tgl')->title('Tanggal')
-                ->searchable(false)->orderable(false)
-                ->addClass('text-center'),
-            Column::make('waktu_mulai')->title('Waktu')
-                ->searchable(false)->orderable(false)
-                ->addClass('text-center'),
-            Column::make('tempat')
                 ->addClass('text-center'),
             Column::computed('action')
                 ->title('Aksi')

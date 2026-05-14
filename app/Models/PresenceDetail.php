@@ -8,7 +8,11 @@ class PresenceDetail extends Model
 {
     // Tambahin 'np' di sini
     // protected $fillable = ['presence_id', 'nama', 'np', 'jabatan', 'asal_instansi', 'tanda_tangan'];
-    protected $fillable = ['presence_id', 'nama', 'np', 'jabatan', 'asal_instansi', 'tanda_tangan'];
+    protected $fillable = ['presence_id', 'nama', 'np', 'jabatan', 'asal_instansi', 'tanda_tangan', 'additional_data'];
+
+    protected $casts = [
+        'additional_data' => 'array',
+    ];
 
     public function presence()
     {

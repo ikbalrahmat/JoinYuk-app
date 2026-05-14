@@ -8,7 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 class Presence extends Model
 {
     // protected $fillable = ['nama_kegiatan', 'slug', 'tgl_kegiatan', 'tempat'];
-    protected $fillable = ['nama_kegiatan', 'slug', 'tgl_kegiatan', 'tempat', 'created_by', 'bukti_kegiatan'];
+    protected $fillable = ['nama_kegiatan', 'slug', 'tgl_kegiatan', 'tempat', 'created_by', 'bukti_kegiatan', 'custom_fields'];
+
+    protected $casts = [
+        'custom_fields' => 'array',
+    ];
 
 
     public function details()

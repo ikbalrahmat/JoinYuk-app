@@ -13,8 +13,9 @@ class PresenceDetailController extends Controller
     /**
      * Export detail absen ke PDF
      */
-    public function exportPdf(string $id)
+    public function exportPdf(Request $request, string $id)
     {
+        $logoOption = $request->query('logo_option', 'both');
         $presence = Presence::findOrFail($id);
         $presenceDetails = PresenceDetail::where('presence_id', $id)->get();
 
@@ -26,7 +27,7 @@ class PresenceDetailController extends Controller
 
         // load view untuk PDF dan kirim data gambar
         $pdf = Pdf::setOptions(['isRemoteEnabled' => true])
-            ->loadView('pages.presence.detail.export-pdf', compact('presence', 'presenceDetails', 'buktiPath'))
+            ->loadView('pages.presence.detail.export-pdf', compact('presence', 'presenceDetails', 'buktiPath', 'logoOption'))
             ->setPaper('a4', 'landscape');
 
         return $pdf->stream("{$presence->nama_kegiatan}.pdf", ['Attachment' => 0]);

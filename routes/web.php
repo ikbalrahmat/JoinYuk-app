@@ -89,6 +89,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/undangan/{undangan}/export-pdf', [UndanganController::class, 'exportPdf'])->name('undangan.exportPdf');
 
     // Presence
+    Route::get('/presence/choose', [PresenceController::class, 'choose'])->name('presence.choose');
     Route::resource('presence', PresenceController::class);
 
     // Presence Detail

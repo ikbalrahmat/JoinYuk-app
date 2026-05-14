@@ -20,12 +20,36 @@ class AbsenDataTable extends DataTable
      */
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
-        return (new EloquentDataTable($query))
-            ->addColumn('tanda_tangan', function ($query) {
-                return "<img width='100' src='" . asset('uploads/' . $query->tanda_tangan) . "'>";
-            })
-            ->rawColumns(['tanda_tangan'])
-            ->setRowId('id');
+        $dt = new EloquentDataTable($query);
+        $rawColumns = [];
+
+        $slug = request()->segment(2);
+        $presence = Presence::where('slug', $slug)->first();
+
+        if ($presence && !empty($presence->custom_fields)) {
+            foreach ($presence->custom_fields as $field) {
+                $id = $field['id'];
+                $dt->addColumn("custom_$id", function ($row) use ($id, $field) {
+                    $val = $row->additional_data[$id] ?? '';
+                    if ($field['type'] === 'signature' && $val) {
+                        return "<img width='100' src='" . asset('uploads/' . $val) . "'>";
+                    }
+                    return is_array($val) ? implode(', ', $val) : $val;
+                });
+                
+                if ($field['type'] === 'signature') {
+                    $rawColumns[] = "custom_$id";
+                }
+            }
+        } else {
+            // Legacy rendering
+            $dt->addColumn('tanda_tangan', function ($row) {
+                return "<img width='100' src='" . asset('uploads/' . $row->tanda_tangan) . "'>";
+            });
+            $rawColumns[] = 'tanda_tangan';
+        }
+
+        return $dt->rawColumns($rawColumns)->setRowId('id');
     }
 
     /**
@@ -55,17 +79,33 @@ class AbsenDataTable extends DataTable
      */
     public function getColumns(): array
     {
-        return [
+        $columns = [
             Column::make('id')
                 ->title('No')
                 ->render('meta.row + meta.settings._iDisplayStart + 1;')
                 ->width(100),
-            Column::make('nama')->title('Nama'),
-            Column::make('np')->title('NP'),
-            Column::make('jabatan')->title('Jabatan'),
-            Column::make('asal_instansi')->title('Unit Kerja/Instansi'),
-            Column::make('tanda_tangan')->title('Tanda Tangan')->orderable(false)->searchable(false),
         ];
+
+        $slug = request()->segment(2);
+        $presence = Presence::where('slug', $slug)->first();
+
+        if ($presence && !empty($presence->custom_fields)) {
+            foreach ($presence->custom_fields as $field) {
+                $columns[] = Column::make("custom_" . $field['id'])
+                                ->title($field['label'])
+                                ->searchable(false)
+                                ->orderable(false);
+            }
+        } else {
+            // Legacy columns
+            $columns[] = Column::make('nama')->title('Nama');
+            $columns[] = Column::make('np')->title('NP');
+            $columns[] = Column::make('jabatan')->title('Jabatan');
+            $columns[] = Column::make('asal_instansi')->title('Unit Kerja/Instansi');
+            $columns[] = Column::make('tanda_tangan')->title('Tanda Tangan')->orderable(false)->searchable(false);
+        }
+
+        return $columns;
     }
 
     /**
