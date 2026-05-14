@@ -188,6 +188,13 @@
     <script src="https://cdn.datatables.net/buttons/3.0.2/js/buttons.print.min.js"></script>
 
     <script>
+        // Setup AJAX CSRF Token globally
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
         const btn = document.getElementById("user-menu");
         const dropdown = document.getElementById("dropdown");
         if(btn && dropdown){
@@ -404,6 +411,13 @@
     <script src="https://cdn.datatables.net/buttons/3.0.2/js/buttons.print.min.js"></script>
 
     <script>
+        // Setup AJAX CSRF Token globally
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
         const btn = document.getElementById("user-menu");
         const dropdown = document.getElementById("dropdown");
         if(btn && dropdown){

@@ -117,16 +117,12 @@
       <!-- Form Kehadiran -->
       <div class="col-12">
         <div class="card p-4">
-          @if(session('success'))
-            <div class="alert alert-success">{{ session('success') }}</div>
-          @endif
-
           <form id="form-absen" action="{{ route('absen.save', $presence->id) }}" method="POST">
             @csrf
 
             <div class="mb-3">
               <label for="nama" class="form-label">Nama</label>
-              <input type="text" class="form-control" id="nama" name="nama" placeholder="Masukkan nama lengkap">
+              <input type="text" class="form-control" id="nama" name="nama" placeholder="Masukkan nama lengkap" required>
               @error('nama')<div class="text-danger small">{{ $message }}</div>@enderror
             </div>
 
@@ -138,13 +134,13 @@
 
             <div class="mb-3">
               <label for="jabatan" class="form-label">Jabatan</label>
-              <input type="text" class="form-control" id="jabatan" name="jabatan" placeholder="Masukkan jabatan">
+              <input type="text" class="form-control" id="jabatan" name="jabatan" placeholder="Masukkan jabatan" required>
               @error('jabatan')<div class="text-danger small">{{ $message }}</div>@enderror
             </div>
 
             <div class="mb-3">
               <label for="asal_instansi" class="form-label">Unit Kerja / Instansi</label>
-              <input type="text" class="form-control" id="asal_instansi" name="asal_instansi" placeholder="Masukkan unit kerja">
+              <input type="text" class="form-control" id="asal_instansi" name="asal_instansi" placeholder="Masukkan unit kerja" required>
               @error('asal_instansi')<div class="text-danger small">{{ $message }}</div>@enderror
             </div>
 
@@ -165,29 +161,13 @@
         </div>
       </div>
 
-      <!-- Tabel Kehadiran -->
-      <div class="col-12">
-        <div class="card p-3">
-          <button class="btn btn-outline-dark w-100 mb-3" id="toggle-table">Lihat Daftar Kehadiran</button>
-          <div class="d-none" id="table-container">
-            <h6 class="fw-semibold mb-3">Daftar Kehadiran</h6>
-            <div class="table-responsive">
-              {{ $dataTable->table(['class' => 'table table-striped align-middle mb-0']) }}
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   </div>
-
-
 
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
   <script src="{{ asset('js/signature.min.js') }}"></script>
-  <script src="https://cdn.datatables.net/2.2.2/js/dataTables.js"></script>
-  <script src="https://cdn.datatables.net/2.2.2/js/dataTables.bootstrap5.js"></script>
 
   <script>
     $(function () {
@@ -209,18 +189,11 @@
         $('#signature64').val('');
       });
 
-      $('#toggle-table').on('click', function () {
-        $('#table-container').toggleClass('d-none');
-        $(this).text($('#table-container').hasClass('d-none') ? 'Lihat Daftar Kehadiran' : 'Sembunyikan Daftar Kehadiran');
-      });
-
       $('#form-absen').on('submit', function () {
         $(this).find('button[type="submit"]').attr('disabled', true).text('Menyimpan...');
       });
     });
   </script>
-
-  {{ $dataTable->scripts(attributes: ['type' => 'module']) }}
 </body>
 
 </html>

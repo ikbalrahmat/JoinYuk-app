@@ -40,6 +40,7 @@ Route::get('/', function () {
 // Rute Absen Publik
 Route::get('absen/{slug}', [AbsenController::class, 'index'])->name('absen.index');
 Route::post('absen/save/{id}', [AbsenController::class, 'save'])->name('absen.save');
+Route::get('absen/{slug}/success', [AbsenController::class, 'success'])->name('absen.success');
 
 // Download QR Code (publik)
 Route::get('/presence/{slug}/download-qrcode', function ($slug) {
@@ -68,6 +69,10 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::put('password', [PasswordController::class, 'update'])->name('profile.password.update');
+
+    // Rute Force Password Change untuk login pertama kali
+    Route::get('/password/setup', [PasswordController::class, 'setup'])->name('password.setup');
+    Route::post('/password/setup', [PasswordController::class, 'updateSetup'])->name('password.setup.update');
     // User Management
     // Route::resource('user', UserController::class);
     Route::resource('users', UserController::class);

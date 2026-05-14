@@ -6,6 +6,7 @@ use App\Models\Presence;
 use App\Models\PresenceDetail;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class PresenceDetailController extends Controller
 {
@@ -46,9 +47,8 @@ class PresenceDetailController extends Controller
         }
 
         // Hapus file tanda tangan (kalau ada)
-        $filePath = public_path('uploads/tanda-tangan/' . $presenceDetail->tanda_tangan);
-        if ($presenceDetail->tanda_tangan && file_exists($filePath)) {
-            unlink($filePath);
+        if ($presenceDetail->tanda_tangan) {
+            Storage::disk('public_uploads')->delete($presenceDetail->tanda_tangan);
         }
 
         // Hapus data dari database

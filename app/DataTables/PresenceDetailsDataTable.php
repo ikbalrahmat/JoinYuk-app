@@ -12,6 +12,14 @@ use Yajra\DataTables\Services\DataTable;
 
 class PresenceDetailsDataTable extends DataTable
 {
+    protected int $presenceId;
+
+    public function setPresenceId(int $presenceId): static
+    {
+        $this->presenceId = $presenceId;
+        return $this;
+    }
+
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
         return (new EloquentDataTable($query))
@@ -30,11 +38,16 @@ class PresenceDetailsDataTable extends DataTable
 
     public function query(PresenceDetail $model): QueryBuilder
     {
-        return $model->with('presence')->where('presence_id', request()->segment(2))->newQuery();
+        // Saat page load: dari property (di-set controller)
+        // Saat AJAX DataTable request: dari query parameter yang dikirim minifiedAjax
+        $presenceId = $this->presenceId ?? request()->integer('presence_id');
+        return $model->newQuery()->with('presence')->where('presence_id', $presenceId);
     }
 
     public function html(): HtmlBuilder
     {
+        $presenceId = $this->presenceId ?? 0;
+
         return $this->builder()
             ->setTableId('presencedetails-table')
             ->columns($this->getColumns())
@@ -45,9 +58,7 @@ class PresenceDetailsDataTable extends DataTable
                 Button::make('excel'),
                 Button::make('csv'),
                 Button::make('pdf'),
-                Button::make('print'),
-                Button::make('reset'),
-                Button::make('reload')
+                Button::make('print')
             ]);
     }
 
@@ -59,12 +70,14 @@ class PresenceDetailsDataTable extends DataTable
                 ->render('meta.row + meta.settings._iDisplayStart + 1;')
                 ->width(100),
             Column::make('presence.nama_kegiatan')
-                ->title('Nama Kegiatan'),
+                ->title('Nama Kegiatan')
+                ->searchable(false)->orderable(false),
             Column::make('nama'),
             Column::make('np')->title('NP'),
             Column::make('jabatan'),
             Column::make('asal_instansi')->title('Unit Kerja/Instansi'),
-            Column::make('tanda_tangan'),
+            Column::make('tanda_tangan')
+                ->searchable(false)->orderable(false),
             Column::computed('action')
                 ->exportable(false)
                 ->printable(false)

@@ -80,9 +80,7 @@ class PresencesDataTable extends DataTable
                 Button::make('excel'),
                 Button::make('csv'),
                 Button::make('pdf'),
-                Button::make('print'),
-                Button::make('reset'),
-                Button::make('reload')
+                Button::make('print')
             ]);
     }
 
@@ -100,8 +98,10 @@ class PresencesDataTable extends DataTable
             Column::make('nama_kegiatan')
                 ->addClass('text-center'),
             Column::make('tgl')->title('Tanggal')
+                ->searchable(false)->orderable(false)
                 ->addClass('text-center'),
             Column::make('waktu_mulai')->title('Waktu')
+                ->searchable(false)->orderable(false)
                 ->addClass('text-center'),
             Column::make('tempat')
                 ->addClass('text-center'),

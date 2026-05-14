@@ -35,7 +35,7 @@ class AbsenDataTable extends DataTable
     {
         $slug = request()->segment(2);
         $presence = Presence::where('slug', $slug)->first();
-        return $model->where('presence_id', $presence->id)->newQuery();
+        return $model->newQuery()->where('presence_id', $presence->id);
     }
 
     /**
@@ -47,16 +47,7 @@ class AbsenDataTable extends DataTable
             ->setTableId('absen-table')
             ->columns($this->getColumns())
             ->minifiedAjax()
-            ->orderBy(1)
-            ->selectStyleSingle()
-            ->buttons([
-                Button::make('excel'),
-                Button::make('csv'),
-                Button::make('pdf'),
-                Button::make('print'),
-                Button::make('reset'),
-                Button::make('reload'),
-            ]);
+            ->orderBy(1);
     }
 
     /**

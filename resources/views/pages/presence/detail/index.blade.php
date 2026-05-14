@@ -174,7 +174,9 @@
                 $.ajax({
                     type: 'DELETE',
                     url: url,
-                    success: function () { window.location.reload(); },
+                    success: function () { 
+                        window.LaravelDataTables['presencedetails-table'].ajax.reload(null, false); 
+                    },
                     error: function (xhr) {
                         alert('Gagal menghapus data!');
                         console.error(xhr.responseText);

@@ -10,10 +10,10 @@ use Illuminate\Support\Facades\Storage;
 
 class AbsenController extends Controller
 {
-    public function index($slug, AbsenDataTable $dataTable)
+    public function index($slug)
     {
         $presence = Presence::where('slug', $slug)->firstOrFail();
-        return $dataTable->render('pages.absen.index', compact('presence'));
+        return view('pages.absen.index', compact('presence'));
     }
 
     public function save(Request $request, string $id)
@@ -49,6 +49,12 @@ class AbsenController extends Controller
         $presenceDetail->tanda_tangan = $signaturePath;
         $presenceDetail->save();
 
-        return redirect()->back()->with('success', 'Absen berhasil disimpan.');
+        return redirect()->route('absen.success', $presence->slug)->with('success', 'Absen berhasil disimpan.');
+    }
+
+    public function success($slug, AbsenDataTable $dataTable)
+    {
+        $presence = Presence::where('slug', $slug)->firstOrFail();
+        return $dataTable->render('pages.absen.success', compact('presence'));
     }
 }

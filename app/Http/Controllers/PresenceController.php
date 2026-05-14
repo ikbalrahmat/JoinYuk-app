@@ -56,7 +56,7 @@ class PresenceController extends Controller
     public function show(string $id, PresenceDetailsDataTable $dataTable)
     {
         $presence = Presence::findOrFail($id);
-        return $dataTable->render('pages.presence.detail.index', compact('presence'));
+        return $dataTable->setPresenceId((int) $presence->id)->render('pages.presence.detail.index', compact('presence'));
     }
 
     /**

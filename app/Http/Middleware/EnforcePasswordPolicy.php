@@ -24,6 +24,8 @@ class EnforcePasswordPolicy
                 'profile.edit',
                 'profile.update',
                 'profile.password.update',
+                'password.setup',
+                'password.setup.update',
                 'logout',
             ];
 
@@ -36,11 +38,7 @@ class EnforcePasswordPolicy
                 }
 
                 if ($user->requires_password_change || $expired) {
-                    $msg = $user->requires_password_change 
-                            ? 'Demi keamanan, Anda diwajibkan untuk mengubah password pada login pertama kali.' 
-                            : 'Masa aktif password Anda telah melewati 90 hari. Silakan ganti dengan yang baru.';
-                            
-                    return redirect()->route('profile.edit')->with('warning', $msg);
+                    return redirect()->route('password.setup');
                 }
             }
         }

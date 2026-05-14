@@ -92,7 +92,7 @@
                     type: 'DELETE',
                     url: url,
                     success: function() {
-                        window.location.reload();
+                        window.LaravelDataTables['presences-table'].ajax.reload(null, false);
                     },
                     error: function(xhr, status, error) {
                         console.log(error);
