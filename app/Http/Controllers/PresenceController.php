@@ -142,7 +142,8 @@ class PresenceController extends Controller
             Storage::disk('public')->delete('bukti/' . $presence->bukti_kegiatan);
         }
 
-        $presence->update(['bukti_kegiatan' => null]);
+        $presence->bukti_kegiatan = null;
+        $presence->save();
 
         return back()->with('success', 'Bukti kegiatan berhasil dihapus!');
     }

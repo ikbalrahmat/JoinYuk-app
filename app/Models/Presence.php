@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Presence extends Model
 {
     // protected $fillable = ['nama_kegiatan', 'slug', 'tgl_kegiatan', 'tempat'];
-    protected $fillable = ['nama_kegiatan', 'slug', 'tgl_kegiatan', 'tempat', 'created_by'];
+    protected $fillable = ['nama_kegiatan', 'slug', 'tgl_kegiatan', 'tempat', 'created_by', 'bukti_kegiatan'];
 
 
     public function details()

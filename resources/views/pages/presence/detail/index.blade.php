@@ -88,7 +88,7 @@
                 </div>
             @endif
 
-            @if (is_null($presence->bukti_kegiatan))
+            @if (empty($presence->bukti_kegiatan))
                 <form action="{{ route('presence.upload.bukti', $presence->id) }}" method="POST" enctype="multipart/form-data" class="space-y-3">
                     @csrf
                     <label for="bukti_kegiatan" class="block text-sm font-semibold text-gray-700">Upload Bukti Kegiatan (Gambar)</label>
