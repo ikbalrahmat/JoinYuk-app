@@ -30,7 +30,7 @@
         @apply bg-gray-100 text-gray-700 text-sm uppercase;
     }
     table.dataTable thead th {
-        @apply px-4 py-3 text-left font-semibold border-b border-gray-200;
+        @apply px-4 py-3 text-center font-semibold border-b border-gray-200;
     }
     table.dataTable tbody tr {
         @apply hover:bg-gray-50 transition;

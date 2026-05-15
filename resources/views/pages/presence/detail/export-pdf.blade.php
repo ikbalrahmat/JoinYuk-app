@@ -112,27 +112,39 @@
     // Default logoOption if not set
     $logoOpt = isset($logoOption) ? $logoOption : 'both';
     
-    // Setup Logo Left
-    $logoLeftBase64 = null;
-    if (!empty($headerConfig['logo_left']) && in_array($logoOpt, ['both', 'left'])) {
+    // Fetch base64 regardless of selection first to check availability
+    $actualLogoLeft = null;
+    if (!empty($headerConfig['logo_left'])) {
         $path = public_path('storage/' . $headerConfig['logo_left']);
         if (file_exists($path)) {
             $type = pathinfo($path, PATHINFO_EXTENSION);
             $data = file_get_contents($path);
-            $logoLeftBase64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
+            $actualLogoLeft = 'data:image/' . $type . ';base64,' . base64_encode($data);
         }
     }
 
-    // Setup Logo Right
-    $logoRightBase64 = null;
-    if (!empty($headerConfig['logo_right']) && in_array($logoOpt, ['both', 'right'])) {
+    $actualLogoRight = null;
+    if (!empty($headerConfig['logo_right'])) {
         $path = public_path('storage/' . $headerConfig['logo_right']);
         if (file_exists($path)) {
             $type = pathinfo($path, PATHINFO_EXTENSION);
             $data = file_get_contents($path);
-            $logoRightBase64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
+            $actualLogoRight = 'data:image/' . $type . ';base64,' . base64_encode($data);
         }
     }
+
+    // Filter based on user selection
+    $logosToDisplay = [];
+    if ($actualLogoLeft && in_array($logoOpt, ['both', 'left'])) {
+        $logosToDisplay[] = $actualLogoLeft;
+    }
+    if ($actualLogoRight && in_array($logoOpt, ['both', 'right'])) {
+        $logosToDisplay[] = $actualLogoRight;
+    }
+
+    // Always fill the left slot first!
+    $displayLogoLeft = $logosToDisplay[0] ?? null;
+    $displayLogoRight = $logosToDisplay[1] ?? null;
 
     // Calculate rowspan for logo cells
     $rowspan = 2 + ($showDate ? 1 : 0) + ($showTime ? 1 : 0) + ($showLocation ? 1 : 0);
@@ -141,17 +153,17 @@
   <!-- HEADER -->
   <table class="main-table">
     <tr>
-      @if($logoLeftBase64)
+      @if($displayLogoLeft)
       <td class="logo-cell" rowspan="{{ $rowspan }}">
-        <img src="{{ $logoLeftBase64 }}">
+        <img src="{{ $displayLogoLeft }}">
       </td>
       @endif
 
       <td colspan="2" class="header-title">DAFTAR HADIR</td>
 
-      @if($logoRightBase64)
+      @if($displayLogoRight)
       <td class="logo-cell" rowspan="{{ $rowspan }}">
-        <img src="{{ $logoRightBase64 }}">
+        <img src="{{ $displayLogoRight }}">
       </td>
       @endif
     </tr>

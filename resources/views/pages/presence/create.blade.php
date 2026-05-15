@@ -17,11 +17,11 @@
             </div>
         </div>
         <div class="flex items-center gap-3">
-            <a href="{{ route('presence.index') }}" class="px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100 rounded-md transition">
-                Cancel
-            </a>
-            <button type="button" onclick="submitForm()" class="px-5 py-2 text-sm font-bold text-white bg-teal-600 hover:bg-teal-700 rounded-md shadow-sm transition flex items-center gap-2">
-                <i class="fa fa-save"></i> Save Form
+            <button type="button" onclick="if(confirm('Form harus disimpan ke database dulu untuk melihat Preview. Simpan sekarang?')) submitForm()" class="px-4 py-2 text-sm font-bold text-primary-600 bg-primary-50 border border-primary-200 hover:bg-primary-100 hover:text-primary-700 rounded-lg shadow-sm transition flex items-center gap-2">
+                <i class="fa-solid fa-eye"></i> Preview
+            </button>
+            <button type="button" onclick="if(confirm('Form harus disimpan ke database dulu untuk membuat link Akses Form. Simpan sekarang?')) submitForm()" class="px-5 py-2 text-sm font-bold text-white bg-slate-800 hover:bg-slate-900 rounded-lg shadow-sm transition flex items-center gap-2">
+                <i class="fa-solid fa-link"></i> Akses Form
             </button>
         </div>
     </div>
@@ -141,6 +141,14 @@
                     
                     <!-- HEADER BLOCK KERTAS -->
                     <div id="headerBlock" class="relative group cursor-pointer border-b-2 border-transparent hover:border-gray-200 transition-colors" onclick="selectField('header')">
+                        
+                        <!-- Floating Toolbar untuk Header -->
+                        <div id="headerToolbar" class="absolute -right-[46px] top-1/2 -translate-y-1/2 flex flex-col shadow-[0_4px_20px_rgba(0,0,0,0.15)] rounded-lg overflow-hidden border border-slate-700 bg-slate-900 z-10 opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-all">
+                            <button type="button" onclick="event.stopPropagation(); selectField('header')" class="w-[42px] h-[40px] flex items-center justify-center text-slate-300 hover:text-white hover:bg-slate-800 transition-colors" title="Properties">
+                                <i class="fa-solid fa-gear text-sm"></i>
+                            </button>
+                        </div>
+
                         <div class="p-10 pb-8 border-2 border-transparent transition-colors" id="headerBorder">
                             <div class="flex justify-between items-center mb-6">
                                 <div id="preview_logo_left_container" class="h-12 w-auto min-w-[48px] flex items-center justify-center bg-gray-50 border border-dashed border-gray-200 rounded text-xs text-gray-400 hidden">
@@ -187,7 +195,7 @@
         </div>
 
         <!-- KOLOM 3: PROPERTIES PANEL (KANAN) -->
-        <div id="propertiesPanel" class="w-80 bg-white border-l border-gray-200 flex flex-col shrink-0 shadow-[-10px_0_20px_rgba(0,0,0,0.04)] z-20 absolute right-0 top-0 bottom-0 transform translate-x-full transition-transform duration-300">
+        <div id="propertiesPanel" class="w-[400px] bg-white border-l border-gray-200 flex flex-col shrink-0 shadow-[-10px_0_20px_rgba(0,0,0,0.04)] z-20 absolute right-0 top-0 bottom-0 transform translate-x-full transition-transform duration-300">
             <div class="flex justify-between items-center bg-slate-800 text-white px-5 py-4 shrink-0">
                 <h3 class="text-sm font-bold tracking-wide">Properties</h3>
                 <button type="button" onclick="closeProperties(event)" class="text-gray-400 hover:text-white transition">
@@ -195,8 +203,18 @@
                 </button>
             </div>
             
-            <div id="propertiesContent" class="p-6 overflow-y-auto custom-scrollbar flex-1 bg-white">
+            <div id="propertiesContent" class="p-6 overflow-y-auto custom-scrollbar flex-1 bg-white pb-24">
                 <!-- Konten properties disuntik ke sini -->
+            </div>
+            
+            <!-- Footer Cancel & Save Form -->
+            <div class="absolute bottom-0 left-0 w-full p-4 border-t border-gray-200 bg-white flex justify-end gap-3 shadow-[0_-4px_10px_rgba(0,0,0,0.02)]">
+                <a href="{{ route('presence.index') }}" class="px-6 py-2 text-sm font-semibold text-gray-600 bg-white border border-gray-300 hover:bg-gray-50 rounded-full transition text-center">
+                    Cancel
+                </a>
+                <button type="button" onclick="submitForm()" class="px-8 py-2 text-sm font-bold text-white bg-teal-600 hover:bg-teal-700 rounded-full shadow-sm transition">
+                    Save
+                </button>
             </div>
         </div>
 
@@ -315,7 +333,6 @@
             if (headerData.location) updateHeader('location', headerData.location);
         }
 
-        selectField('header');
         renderCanvas();
         initSortable();
     };
@@ -363,12 +380,25 @@
         };
         
         fields.push(newField);
-        selectField(newId);
+        activeFieldId = newId; // Make active to show toolbar but don't open properties panel automatically
+        renderCanvas();
         
         setTimeout(() => {
             const el = document.querySelector(`[data-id="${newId}"]`);
             if(el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }, 100);
+    }
+
+    function duplicateField(id) {
+        const index = fields.findIndex(f => f.id === id);
+        if (index > -1) {
+            const original = fields[index];
+            const newField = JSON.parse(JSON.stringify(original));
+            newField.id = generateId();
+            fields.splice(index + 1, 0, newField);
+            activeFieldId = newField.id;
+            renderCanvas();
+        }
     }
 
     function deleteField(id) {
@@ -438,10 +468,13 @@
     function renderCanvas() {
         // 1. Header Box Styling
         const headerBorder = document.getElementById('headerBorder');
+        const headerToolbar = document.getElementById('headerToolbar');
         if(activeFieldId === 'header') {
             headerBorder.className = 'border-2 border-dashed border-sky-400 bg-sky-50/10 p-10 pb-8 transition-colors rounded-t';
+            if(headerToolbar) headerToolbar.className = 'absolute -right-[46px] top-1/2 -translate-y-1/2 flex flex-col shadow-[0_4px_20px_rgba(0,0,0,0.15)] rounded-lg overflow-hidden border border-slate-700 bg-slate-900 z-10 transition-all !opacity-100 !pointer-events-auto';
         } else {
             headerBorder.className = 'border-2 border-transparent hover:border-dashed hover:border-gray-300 p-10 pb-8 transition-colors rounded-t';
+            if(headerToolbar) headerToolbar.className = 'absolute -right-[46px] top-1/2 -translate-y-1/2 flex flex-col shadow-[0_4px_20px_rgba(0,0,0,0.15)] rounded-lg overflow-hidden border border-slate-700 bg-slate-900 z-10 opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-all';
         }
 
         // 2. Custom Fields
@@ -456,7 +489,7 @@
             fields.forEach((field) => {
                 const isActive = (field.id === activeFieldId);
                 const wrapper = document.createElement('div');
-                wrapper.className = `p-5 relative transition-colors cursor-pointer border-2 rounded ${isActive ? 'field-active' : 'border-transparent hover:border-gray-200 hover:bg-gray-50/50'}`;
+                wrapper.className = `p-5 relative transition-colors cursor-pointer border-2 rounded group ${isActive ? 'field-active' : 'border-transparent hover:border-gray-200 hover:bg-gray-50/50'}`;
                 wrapper.setAttribute('data-id', field.id);
                 wrapper.onclick = (e) => { e.stopPropagation(); selectField(field.id); };
 
@@ -497,20 +530,24 @@
             inputPreviewHtml = `<div class="${widthClass} h-28 border border-gray-300 rounded bg-white mt-1 flex items-end p-2 pointer-events-none"><div class="w-full border-b border-gray-300 border-dashed"></div></div>`;
         }
 
-        // Tampilkan tombol drag & delete
-        let actionTools = '';
-        if (isActive) {
-            actionTools = `
-                <div class="absolute -left-5 top-1/2 -translate-y-1/2 text-gray-300 hover:text-sky-500 drag-handle cursor-grab p-2 text-xl" title="Move">
-                    <i class="fa fa-grip-vertical"></i>
-                </div>
-                <div class="absolute right-3 top-3">
-                    <button type="button" onclick="event.stopPropagation(); deleteField('${field.id}')" class="w-8 h-8 rounded-full bg-red-100 text-red-600 hover:bg-red-200 flex items-center justify-center transition" title="Delete Field">
-                        <i class="fa fa-trash text-sm"></i>
-                    </button>
-                </div>
-            `;
-        }
+        // Tampilkan tombol drag & action (selalu ada, hide/show via hover)
+        let actionTools = `
+            <div class="absolute -left-5 top-1/2 -translate-y-1/2 text-gray-300 hover:text-sky-500 drag-handle cursor-grab p-2 text-xl opacity-0 group-hover:opacity-100 transition-opacity ${isActive ? '!opacity-100' : ''}" title="Move">
+                <i class="fa fa-grip-vertical"></i>
+            </div>
+            <!-- Floating Toolbar on the Right -->
+            <div class="absolute -right-[46px] top-1/2 -translate-y-1/2 flex flex-col shadow-[0_4px_20px_rgba(0,0,0,0.15)] rounded-lg overflow-hidden border border-slate-700 bg-slate-900 z-10 opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-all ${isActive ? '!opacity-100 !pointer-events-auto' : ''}">
+                <button type="button" onclick="event.stopPropagation(); selectField('${field.id}')" class="w-[42px] h-[40px] flex items-center justify-center text-slate-300 hover:text-white hover:bg-slate-800 transition-colors border-b border-slate-700" title="Properties">
+                    <i class="fa-solid fa-gear text-sm"></i>
+                </button>
+                <button type="button" onclick="event.stopPropagation(); duplicateField('${field.id}')" class="w-[42px] h-[40px] flex items-center justify-center text-slate-300 hover:text-white hover:bg-slate-800 transition-colors border-b border-slate-700" title="Duplicate">
+                    <i class="fa-regular fa-copy text-sm"></i>
+                </button>
+                <button type="button" onclick="event.stopPropagation(); deleteField('${field.id}')" class="w-[42px] h-[42px] flex items-center justify-center text-white bg-red-500 hover:bg-red-600 transition-colors" title="Delete">
+                    <i class="fa-solid fa-trash-can text-sm"></i>
+                </button>
+            </div>
+        `;
 
         return `
             ${actionTools}

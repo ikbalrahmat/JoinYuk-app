@@ -97,7 +97,15 @@ class PresenceController extends Controller
 
         $presence->save();
 
-        return redirect()->route('presence.index');
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'status' => 'success', 
+                'message' => 'Formulir berhasil disimpan!',
+                'redirect' => route('presence.edit', $presence->id)
+            ]);
+        }
+
+        return redirect()->route('presence.edit', $presence->id)->with('success', 'Formulir berhasil disimpan!');
     }
 
     /**
@@ -171,7 +179,14 @@ class PresenceController extends Controller
 
         $presence->save();
 
-        return redirect()->route('presence.index');
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'status' => 'success', 
+                'message' => 'Formulir berhasil diperbarui!'
+            ]);
+        }
+
+        return redirect()->route('presence.edit', $presence->id)->with('success', 'Formulir berhasil diperbarui!');
     }
 
     /**

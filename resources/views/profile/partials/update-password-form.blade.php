@@ -28,9 +28,15 @@
 
         <div>
             <label for="current_password" class="block text-sm font-medium text-gray-700">Password Saat Ini</label>
-            <input id="current_password" name="current_password" type="password"
-                   autocomplete="current-password"
-                   class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500">
+            <div class="relative mt-1">
+                <input id="current_password" name="current_password" type="password"
+                       autocomplete="current-password"
+                       class="block w-full border border-gray-300 rounded-md shadow-sm pl-3 pr-10 py-2 focus:ring-blue-500 focus:border-blue-500">
+                <button type="button" tabindex="-1" class="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer text-gray-500 hover:text-blue-600 transition" 
+                        onclick="const input = document.getElementById('current_password'); const icon = this.querySelector('i'); if (input.type === 'password') { input.type = 'text'; icon.classList.remove('fa-eye'); icon.classList.add('fa-eye-slash'); } else { input.type = 'password'; icon.classList.remove('fa-eye-slash'); icon.classList.add('fa-eye'); }">
+                    <i class="fa-solid fa-eye"></i>
+                </button>
+            </div>
             @error('current_password', 'updatePassword')
                 <p class="text-sm text-red-600 mt-2">{{ $message }}</p>
             @enderror
@@ -38,9 +44,15 @@
 
         <div>
             <label for="password" class="block text-sm font-medium text-gray-700">Password Baru</label>
-            <input id="password" name="password" type="password"
-                   autocomplete="new-password"
-                   class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500">
+            <div class="relative mt-1">
+                <input id="password" name="password" type="password"
+                       autocomplete="new-password"
+                       class="block w-full border border-gray-300 rounded-md shadow-sm pl-3 pr-10 py-2 focus:ring-blue-500 focus:border-blue-500">
+                <button type="button" tabindex="-1" class="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer text-gray-500 hover:text-blue-600 transition" 
+                        onclick="const input = document.getElementById('password'); const icon = this.querySelector('i'); if (input.type === 'password') { input.type = 'text'; icon.classList.remove('fa-eye'); icon.classList.add('fa-eye-slash'); } else { input.type = 'password'; icon.classList.remove('fa-eye-slash'); icon.classList.add('fa-eye'); }">
+                    <i class="fa-solid fa-eye"></i>
+                </button>
+            </div>
             @error('password', 'updatePassword')
                 <p class="text-sm text-red-600 mt-2">{{ $message }}</p>
             @enderror
@@ -48,9 +60,15 @@
 
         <div>
             <label for="password_confirmation" class="block text-sm font-medium text-gray-700">Konfirmasi Password</label>
-            <input id="password_confirmation" name="password_confirmation" type="password"
-                   autocomplete="new-password"
-                   class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500">
+            <div class="relative mt-1">
+                <input id="password_confirmation" name="password_confirmation" type="password"
+                       autocomplete="new-password"
+                       class="block w-full border border-gray-300 rounded-md shadow-sm pl-3 pr-10 py-2 focus:ring-blue-500 focus:border-blue-500">
+                <button type="button" tabindex="-1" class="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer text-gray-500 hover:text-blue-600 transition" 
+                        onclick="const input = document.getElementById('password_confirmation'); const icon = this.querySelector('i'); if (input.type === 'password') { input.type = 'text'; icon.classList.remove('fa-eye'); icon.classList.add('fa-eye-slash'); } else { input.type = 'password'; icon.classList.remove('fa-eye-slash'); icon.classList.add('fa-eye'); }">
+                    <i class="fa-solid fa-eye"></i>
+                </button>
+            </div>
             @error('password_confirmation', 'updatePassword')
                 <p class="text-sm text-red-600 mt-2">{{ $message }}</p>
             @enderror

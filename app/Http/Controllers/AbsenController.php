@@ -20,7 +20,7 @@ class AbsenController extends Controller
     {
         $presence = Presence::findOrFail($id);
 
-        if (empty($presence->custom_fields)) {
+        if (is_null($presence->custom_fields)) {
             // LAMA (Backward Compatibility)
             $request->validate([
                 'nama' => 'required|string|max:255',
