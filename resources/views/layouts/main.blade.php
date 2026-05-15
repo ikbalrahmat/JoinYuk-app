@@ -60,8 +60,8 @@
     
     <!-- Decorative Background Elements -->
     <div class="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-        <div class="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] bg-primary-400/20 rounded-full mix-blend-multiply filter blur-[80px] opacity-70 animate-pulse"></div>
-        <div class="absolute bottom-[-10%] left-[-5%] w-[600px] h-[600px] bg-indigo-400/20 rounded-full mix-blend-multiply filter blur-[100px] opacity-70"></div>
+        <div class="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] bg-primary-400/10 rounded-full mix-blend-multiply filter blur-[80px] opacity-70 animate-pulse"></div>
+        <div class="absolute bottom-[-10%] left-[-5%] w-[600px] h-[600px] bg-indigo-400/10 rounded-full mix-blend-multiply filter blur-[100px] opacity-70"></div>
     </div>
 
     <!-- Mobile & Desktop Backdrop -->
@@ -117,14 +117,14 @@
 
     <div class="flex pt-14 min-h-screen relative z-10">
         <!-- Sidebar (Full Height) -->
-        <aside id="sidebar" class="w-60 bg-white border-r border-slate-200/60 flex flex-col px-4 py-4 fixed top-0 bottom-0 left-0 z-50 transform -translate-x-full lg:translate-x-0 transition-all duration-300 ease-in-out shadow-2xl lg:shadow-none">
+        <aside id="sidebar" class="w-60 bg-[#111827] border-r-0 flex flex-col px-4 py-4 fixed top-0 bottom-0 left-0 z-50 transform -translate-x-full lg:translate-x-0 transition-all duration-300 ease-in-out shadow-2xl lg:shadow-none">
             
             <!-- Logo Section in Sidebar -->
             <div class="flex items-center justify-between mb-6 h-8 logo-container-outer transition-all duration-300">
                 <a href="{{ route('home') }}" class="flex items-center space-x-2 group shrink-0 w-full">
-                    <img src="{{ asset('assets/logo1.png') }}" alt="Logo" class="h-8 w-auto transition-transform group-hover:scale-105" onerror="this.outerHTML='<i class=\'fa-solid fa-layer-group text-primary-600 text-2xl\'></i>'">
+                    <img src="{{ asset('assets/logo1.png') }}" alt="Logo" class="h-8 w-auto transition-transform group-hover:scale-105" onerror="this.outerHTML='<i class=\'fa-solid fa-layer-group text-white text-2xl\'></i>'">
                     <div class="logo-text-container">
-                        <h1 class="font-extrabold text-xl text-slate-800 tracking-tight">JoinYuk</h1>
+                        <h1 class="font-extrabold text-xl text-white tracking-tight">JoinYuk</h1>
                     </div>
                 </a>
             </div>
@@ -138,67 +138,67 @@
             <!-- Navigation Links -->
             <nav class="space-y-1 flex flex-col flex-grow overflow-y-auto pr-2 custom-scrollbar">
                 @if(auth()->user()->can('akses.dashboard'))
-                <a href="{{ route('home') }}" class="flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('home') ? 'bg-primary-50 text-primary-600 shadow-sm ring-1 ring-primary-100' : 'text-slate-600 hover:bg-slate-50 hover:text-primary-600' }}">
-                    <i class="fa-solid fa-chart-pie w-5 text-center {{ request()->routeIs('home') ? 'text-primary-500' : 'text-slate-400' }}"></i> <span>Dashboard</span>
+                <a href="{{ route('home') }}" class="flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 {{ request()->routeIs('home') ? 'bg-[#263159] text-white shadow-sm' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
+                    <i class="fa-solid fa-border-all w-5 text-center {{ request()->routeIs('home') ? 'text-indigo-400' : 'text-slate-400' }}"></i> <span>Dashboard</span>
                 </a>
                 @endif
                 
-                <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mt-6 mb-2 px-3 menu-header">Menu Utama</div>
+                <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider mt-6 mb-2 px-3 menu-header">Menu Utama</div>
                 
                 <ul class="space-y-1.5 text-sm">
                     @if(auth()->user()->can('akses.user'))
-                    <li><a href="{{ route('users.index') }}" class="flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium transition-all duration-200 {{ request()->routeIs('users.*') ? 'bg-primary-50 text-primary-600 shadow-sm ring-1 ring-primary-100' : 'text-slate-600 hover:bg-slate-50 hover:text-primary-600' }}">
-                        <i class="fa-solid fa-users w-5 text-center {{ request()->routeIs('users.*') ? 'text-primary-500' : 'text-slate-400' }}"></i><span>User Management</span></a>
+                    <li><a href="{{ route('users.index') }}" class="flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium transition-all duration-200 {{ request()->routeIs('users.*') ? 'bg-[#263159] text-white shadow-sm' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
+                        <i class="fa-solid fa-users w-5 text-center {{ request()->routeIs('users.*') ? 'text-indigo-400' : 'text-slate-400' }}"></i><span>User Management</span></a>
                     </li>
                     @endif
                     @if(auth()->user()->can('akses.undangan'))
-                    <li><a href="{{ route('undangan.index') }}" class="flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium transition-all duration-200 {{ request()->routeIs('undangan.*') ? 'bg-primary-50 text-primary-600 shadow-sm ring-1 ring-primary-100' : 'text-slate-600 hover:bg-slate-50 hover:text-primary-600' }}">
-                        <i class="fa-solid fa-envelope-open-text w-5 text-center {{ request()->routeIs('undangan.*') ? 'text-primary-500' : 'text-slate-400' }}"></i><span>Undangan</span></a>
+                    <li><a href="{{ route('undangan.index') }}" class="flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium transition-all duration-200 {{ request()->routeIs('undangan.*') ? 'bg-[#263159] text-white shadow-sm' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
+                        <i class="fa-solid fa-envelope-open-text w-5 text-center {{ request()->routeIs('undangan.*') ? 'text-indigo-400' : 'text-slate-400' }}"></i><span>Undangan</span></a>
                     </li>
                     @endif
                     @if(auth()->user()->can('akses.agenda'))
-                    <li><a href="{{ route('agenda.index') }}" class="flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium transition-all duration-200 {{ request()->routeIs('agenda.*') ? 'bg-primary-50 text-primary-600 shadow-sm ring-1 ring-primary-100' : 'text-slate-600 hover:bg-slate-50 hover:text-primary-600' }}">
-                        <i class="fa-solid fa-list-check w-5 text-center {{ request()->routeIs('agenda.*') ? 'text-primary-500' : 'text-slate-400' }}"></i><span>Susunan Acara</span></a>
+                    <li><a href="{{ route('agenda.index') }}" class="flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium transition-all duration-200 {{ request()->routeIs('agenda.*') ? 'bg-[#263159] text-white shadow-sm' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
+                        <i class="fa-solid fa-list-check w-5 text-center {{ request()->routeIs('agenda.*') ? 'text-indigo-400' : 'text-slate-400' }}"></i><span>Susunan Acara</span></a>
                     </li>
                     @endif
                     @if(auth()->user()->can('akses.rapat'))
-                    <li><a href="{{ route('rapat.index') }}" class="flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium transition-all duration-200 {{ request()->routeIs('rapat.*') ? 'bg-primary-50 text-primary-600 shadow-sm ring-1 ring-primary-100' : 'text-slate-600 hover:bg-slate-50 hover:text-primary-600' }}">
-                        <i class="fa-solid fa-video w-5 text-center {{ request()->routeIs('rapat.*') ? 'text-primary-500' : 'text-slate-400' }}"></i><span>Rapat Online</span></a>
+                    <li><a href="{{ route('rapat.index') }}" class="flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium transition-all duration-200 {{ request()->routeIs('rapat.*') ? 'bg-[#263159] text-white shadow-sm' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
+                        <i class="fa-solid fa-video w-5 text-center {{ request()->routeIs('rapat.*') ? 'text-indigo-400' : 'text-slate-400' }}"></i><span>Rapat Online</span></a>
                     </li>
                     @endif
                     @if(auth()->user()->can('akses.materi'))
-                    <li><a href="{{ route('materi.index') }}" class="flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium transition-all duration-200 {{ request()->routeIs('materi.*') ? 'bg-primary-50 text-primary-600 shadow-sm ring-1 ring-primary-100' : 'text-slate-600 hover:bg-slate-50 hover:text-primary-600' }}">
-                        <i class="fa-solid fa-book-open w-5 text-center {{ request()->routeIs('materi.*') ? 'text-primary-500' : 'text-slate-400' }}"></i><span>Materi</span></a>
+                    <li><a href="{{ route('materi.index') }}" class="flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium transition-all duration-200 {{ request()->routeIs('materi.*') ? 'bg-[#263159] text-white shadow-sm' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
+                        <i class="fa-solid fa-book-open w-5 text-center {{ request()->routeIs('materi.*') ? 'text-indigo-400' : 'text-slate-400' }}"></i><span>Materi</span></a>
                     </li>
                     @endif
                     @if(auth()->user()->can('akses.absensi'))
-                    <li><a href="{{ route('presence.index') }}" class="flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium transition-all duration-200 {{ request()->routeIs('presence.*') ? 'bg-primary-50 text-primary-600 shadow-sm ring-1 ring-primary-100' : 'text-slate-600 hover:bg-slate-50 hover:text-primary-600' }}">
-                        <i class="fa-solid fa-calendar-check w-5 text-center {{ request()->routeIs('presence.*') ? 'text-primary-500' : 'text-slate-400' }}"></i><span>Absensi</span></a>
+                    <li><a href="{{ route('presence.index') }}" class="flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium transition-all duration-200 {{ request()->routeIs('presence.*') ? 'bg-[#263159] text-white shadow-sm' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
+                        <i class="fa-solid fa-calendar-check w-5 text-center {{ request()->routeIs('presence.*') ? 'text-indigo-400' : 'text-slate-400' }}"></i><span>Absensi</span></a>
                     </li>
                     @endif
                     @if(auth()->user()->can('akses.risalah'))
-                    <li><a href="{{ route('risalah.index') }}" class="flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium transition-all duration-200 {{ request()->routeIs('risalah.*') ? 'bg-primary-50 text-primary-600 shadow-sm ring-1 ring-primary-100' : 'text-slate-600 hover:bg-slate-50 hover:text-primary-600' }}">
-                        <i class="fa-solid fa-file-signature w-5 text-center {{ request()->routeIs('risalah.*') ? 'text-primary-500' : 'text-slate-400' }}"></i><span>Risalah</span></a>
+                    <li><a href="{{ route('risalah.index') }}" class="flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium transition-all duration-200 {{ request()->routeIs('risalah.*') ? 'bg-[#263159] text-white shadow-sm' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
+                        <i class="fa-solid fa-file-signature w-5 text-center {{ request()->routeIs('risalah.*') ? 'text-indigo-400' : 'text-slate-400' }}"></i><span>Risalah</span></a>
                     </li>
                     @endif
                     @if(auth()->user()->can('akses.kuis'))
-                    <li><a href="{{ route('kuis.index') }}" class="flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium transition-all duration-200 {{ request()->routeIs('kuis.*') ? 'bg-primary-50 text-primary-600 shadow-sm ring-1 ring-primary-100' : 'text-slate-600 hover:bg-slate-50 hover:text-primary-600' }}">
-                        <i class="fa-solid fa-clipboard-question w-5 text-center {{ request()->routeIs('kuis.*') ? 'text-primary-500' : 'text-slate-400' }}"></i><span>Kuis</span></a>
+                    <li><a href="{{ route('kuis.index') }}" class="flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium transition-all duration-200 {{ request()->routeIs('kuis.*') ? 'bg-[#263159] text-white shadow-sm' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
+                        <i class="fa-solid fa-clipboard-question w-5 text-center {{ request()->routeIs('kuis.*') ? 'text-indigo-400' : 'text-slate-400' }}"></i><span>Kuis</span></a>
                     </li>
                     @endif
                     @if(auth()->user()->can('akses.survey'))
-                    <li><a href="{{ route('survey.index') }}" class="flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium transition-all duration-200 {{ request()->routeIs('survey.*') ? 'bg-primary-50 text-primary-600 shadow-sm ring-1 ring-primary-100' : 'text-slate-600 hover:bg-slate-50 hover:text-primary-600' }}">
-                        <i class="fa-solid fa-chart-simple w-5 text-center {{ request()->routeIs('survey.*') ? 'text-primary-500' : 'text-slate-400' }}"></i><span>Survey</span></a>
+                    <li><a href="{{ route('survey.index') }}" class="flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium transition-all duration-200 {{ request()->routeIs('survey.*') ? 'bg-[#263159] text-white shadow-sm' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
+                        <i class="fa-solid fa-chart-simple w-5 text-center {{ request()->routeIs('survey.*') ? 'text-indigo-400' : 'text-slate-400' }}"></i><span>Survey</span></a>
                     </li>
                     @endif
                     @if(auth()->user()->can('akses.anggaran'))
-                    <li><a href="{{ route('anggaran.index') }}" class="flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium transition-all duration-200 {{ request()->routeIs('anggaran.*') ? 'bg-primary-50 text-primary-600 shadow-sm ring-1 ring-primary-100' : 'text-slate-600 hover:bg-slate-50 hover:text-primary-600' }}">
-                        <i class="fa-solid fa-wallet w-5 text-center {{ request()->routeIs('anggaran.*') ? 'text-primary-500' : 'text-slate-400' }}"></i><span>Anggaran</span></a>
+                    <li><a href="{{ route('anggaran.index') }}" class="flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium transition-all duration-200 {{ request()->routeIs('anggaran.*') ? 'bg-[#263159] text-white shadow-sm' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
+                        <i class="fa-solid fa-wallet w-5 text-center {{ request()->routeIs('anggaran.*') ? 'text-indigo-400' : 'text-slate-400' }}"></i><span>Anggaran</span></a>
                     </li>
                     @endif
                     @if(auth()->user()->can('akses.konsumsi'))
-                    <li><a href="{{ route('konsumsi.index') }}" class="flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium transition-all duration-200 {{ request()->routeIs('konsumsi.*') ? 'bg-primary-50 text-primary-600 shadow-sm ring-1 ring-primary-100' : 'text-slate-600 hover:bg-slate-50 hover:text-primary-600' }}">
-                        <i class="fa-solid fa-utensils w-5 text-center {{ request()->routeIs('konsumsi.*') ? 'text-primary-500' : 'text-slate-400' }}"></i><span>Konsumsi</span></a>
+                    <li><a href="{{ route('konsumsi.index') }}" class="flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium transition-all duration-200 {{ request()->routeIs('konsumsi.*') ? 'bg-[#263159] text-white shadow-sm' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
+                        <i class="fa-solid fa-utensils w-5 text-center {{ request()->routeIs('konsumsi.*') ? 'text-indigo-400' : 'text-slate-400' }}"></i><span>Konsumsi</span></a>
                     </li>
                     @endif
                 </ul>
